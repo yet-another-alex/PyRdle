@@ -38,7 +38,6 @@ class PyrdleGame:
 
     def pick_word(self):
         self.current_word = random.choice(self.words).upper()
-        print(self.current_word)
 
     def reset(self):
         self.current_box = None

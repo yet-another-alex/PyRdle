@@ -24,11 +24,17 @@ pyrdle_game = PyrdleGame('wordlist.txt')
 
 def key_up(e):
     if e.char.isalpha() and not pyrdle_game.solved:
-        if pyrdle_game.current_idx < 6 and pyrdle_game.current_guess < 7:
+        if pyrdle_game.current_idx <= 5 and pyrdle_game.current_guess < 7:
             widget_name = f"{pyrdle_game.current_guess}_{pyrdle_game.current_idx}"
             current_box = root.nametowidget(widget_name)
 
-            pyrdle_game.current_try += e.char.upper()
+            if len(pyrdle_game.current_try) < 5:
+                pyrdle_game.current_try += e.char.upper()
+            else:
+                letters = list(pyrdle_game.current_try)
+                letters[4] = e.char.upper()
+                pyrdle_game.current_try = ''.join(letters)
+            
             current_box['text'] = e.char.upper()
 
             # increment index
@@ -49,6 +55,9 @@ def key_backspace(e):
 
 
 def key_return(e):
+    print(pyrdle_game.current_idx)
+    print(pyrdle_game.is_valid())
+    print(pyrdle_game.current_try)
     if pyrdle_game.current_idx == 5 and pyrdle_game.is_valid() and not pyrdle_game.solved:
         # evaluate current guess
         evaluate()
@@ -59,6 +68,8 @@ def key_return(e):
         # increment counters for next guess
         pyrdle_game.current_guess += 1
         pyrdle_game.current_idx = 1
+    elif not pyrdle_game.is_valid():
+        label_bottom['text'] = 'Word not found in list!'
 
 
 def evaluate():
@@ -110,7 +121,7 @@ for row_idx in range(1, 7):
         label = Label(root, width=MIN_WIDTH, height=MIN_HEIGHT, name=name, background=C_GREY, font=(None, FONT_SIZE), borderwidth=2, relief='solid')
         label.grid(row=row_idx, column=col_idx, sticky=NSEW)
 
-label_bottom = Label(root, text='Bottom Text', anchor=W, font=(None, int(FONT_SIZE/4)))
+label_bottom = Label(root, text='Start guessing!', anchor=W, font=(None, int(FONT_SIZE/4)))
 label_bottom.grid(row=8, column=0, columnspan=4)
 
 button_again = Button(root, text='AGAIN', anchor=CENTER, font=(None, int(FONT_SIZE/4)), command=reset)
